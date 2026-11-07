@@ -1,0 +1,117 @@
+{
+  "timestamp": "20261107T174613Z",
+  "backend": "real",
+  "prompt_hash": "2ddcc99f8c9d64cf",
+  "dataset_version": 1,
+  "case_count": 2,
+  "gates": {
+    "L1_pass_rate": {
+      "value": 0.0,
+      "threshold": 1.0,
+      "passed": false
+    },
+    "L2_pass_rate": {
+      "value": 0.0,
+      "threshold": 1.0,
+      "passed": false
+    },
+    "L3_mean_score": {
+      "value": 0.0,
+      "threshold": 0.7,
+      "passed": false
+    },
+    "aggregate": {
+      "value": 0.0,
+      "threshold": 0.85,
+      "passed": false
+    }
+  },
+  "passed": false,
+  "cases": [
+    {
+      "id": "N01",
+      "category": "normal",
+      "input": {
+        "text": "Remind me to call mom tomorrow at 5pm",
+        "now": "2026-11-07T10:00:00Z",
+        "timezone": "Asia/Kolkata"
+      },
+      "expect": {
+        "intent": "create",
+        "requires": [
+          "title",
+          "when"
+        ],
+        "time_window": [
+          "2026-11-08T10:00:00Z",
+          "2026-11-08T13:00:00Z"
+        ],
+        "title_must_contain": [
+          "call",
+          "mom"
+        ],
+        "semantic_rubric": "title names a call to mom; when is 5 PM Asia/Kolkata on 2026-11-08 (UTC 11:30)"
+      },
+      "backend_error": "KeyError('\"intent\"')",
+      "duration_s": 0.0,
+      "l1": {
+        "passed": false,
+        "checks": []
+      },
+      "l2": {
+        "passed": false,
+        "agent_invariants": [],
+        "dataset_invariants": []
+      },
+      "l3": {
+        "score": 0.0,
+        "passed": false,
+        "notes": [
+          "backend error"
+        ]
+      }
+    },
+    {
+      "id": "N02",
+      "category": "normal",
+      "input": {
+        "text": "Remind me to pick up groceries in 30 minutes",
+        "now": "2026-11-07T10:00:00Z",
+        "timezone": "Asia/Kolkata"
+      },
+      "expect": {
+        "intent": "create",
+        "requires": [
+          "title",
+          "when"
+        ],
+        "time_window": [
+          "2026-11-07T10:28:00Z",
+          "2026-11-07T10:32:00Z"
+        ],
+        "title_must_contain": [
+          "grocer"
+        ],
+        "semantic_rubric": "title names picking up groceries; when is now + 30 minutes"
+      },
+      "backend_error": "KeyError('\"intent\"')",
+      "duration_s": 0.0,
+      "l1": {
+        "passed": false,
+        "checks": []
+      },
+      "l2": {
+        "passed": false,
+        "agent_invariants": [],
+        "dataset_invariants": []
+      },
+      "l3": {
+        "score": 0.0,
+        "passed": false,
+        "notes": [
+          "backend error"
+        ]
+      }
+    }
+  ]
+}
