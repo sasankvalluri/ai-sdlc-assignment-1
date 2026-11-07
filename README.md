@@ -2,7 +2,6 @@
 
 Course: AI-Augmented Software Development Life Cycle (SE ZG534), S1 2026
 Author: Sasank Valluri
-Due: 2026-11-15
 
 This repo is my submission for Assignment 1. It has two small apps I
 built using the GitHub Spec Kit SDD workflow and the local validation
@@ -12,8 +11,7 @@ harness I wrote for each.
 
 **Part 1A — Smart Todo CLI.** A small deterministic command-line task
 manager in Python. Tasks live in a JSON file. CRUD, tag and status
-filters, priority ordering, and a strict status lifecycle (you can't
-re-complete something that's already done — see `clarify.md` C-01).
+filters, priority ordering, and a strict status lifecycle .
 The harness has four gates — lint (`ruff`), SAST (`bandit`), 30
 spec-derived tests (`pytest`), and coverage at 85 %. There were three
 honest repair cycles getting it to green; they're all in
@@ -27,13 +25,11 @@ layers — JSON-schema check, intent and safety invariants, rule-based
 semantic rubric — across a 17-case dataset covering normal, boundary,
 ambiguous, missing, malformed and adversarial inputs. The final run on
 Groq `openai/gpt-oss-20b` at temperature 0.3 passes all 17 cases,
-aggregate 0.9941. Four repair cycles got there, all in
-`Part-1B/evidence/harness-log.md`.
+aggregate 0.9941. .
 
 **Part 2 — Reflection.** Five short answers in `Reflection-Report.md`,
 each tied to actual evidence in the repo (run ids, file paths, a
-prompt-hash change). This is the file that gets exported to `.docx`
-and uploaded to LMS.
+prompt-hash change). 
 
 ## Running the harnesses
 
@@ -46,8 +42,7 @@ cd Part-1B && uv sync && ./.harness/run.sh --backend mock
 
 # Part 1B (real, Groq free tier — https://console.groq.com/keys)
 GROQ_API_KEY="..." ./.harness/run.sh --backend groq
-# If Groq retires the default model, pick one from the list and set:
-# GROQ_MODEL="<id>" GROQ_API_KEY="..." ./.harness/run.sh --backend groq
+
 ```
 
 ## Repository layout
@@ -55,7 +50,7 @@ GROQ_API_KEY="..." ./.harness/run.sh --backend groq
 ```
 Assignment-1/
 ├── README.md                  ← this file
-├── Reflection-Report.md       ← Part 2 (also exported to .docx for LMS)
+├── Reflection-Report.md        
 ├── Part-1A/
 │   ├── spec-kit/              constitution, spec, clarify, plan, tasks
 │   ├── src/                   smart_todo package
@@ -75,16 +70,14 @@ Assignment-1/
 
 - Code — this public repo at
   https://github.com/sasankvalluri/ai-sdlc-assignment-1
-- Demo video — link lives in `Reflection-Report.md` once I've uploaded
-  it to Drive / OneDrive.
-- Reflection report — `Reflection-Report.md`, exported to `.docx` for
-  LMS upload.
+- Demo video — link lives in `Reflection-Report.md` 
+- Reflection report — `Reflection-Report.md`,
 
 ## AI assistance
 
 I used an AI coding assistant for drafting the Spec Kit artifacts,
 some boilerplate in the implementation, the first draft of the
 prompts, and the harness scaffolding — all within the "Acceptable AI
-Uses" clause (§11.4 of the brief: SDD and harness development). The
+Uses" clause. The
 reflection answers are mine; the harness logs are my working notes.
 No secrets or API tokens are committed anywhere in this repo.
