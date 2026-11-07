@@ -1,0 +1,51 @@
+{
+  "timestamp": "20261107T173259Z",
+  "cwd": "/Users/sasankvalluri/Documents/Assignment-1-AI-SDLC/Part-1A",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "G1",
+      "name": "lint",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "rule": "ruff check",
+      "expected": "0 violations",
+      "observed": "All checks passed!"
+    },
+    {
+      "gate": "G2",
+      "name": "security",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "rule": "bandit -r src -ll",
+      "expected": "0 Medium/High findings",
+      "observed": "OK"
+    },
+    {
+      "gate": "G3",
+      "name": "tests",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "..............................                                           [100%]\n30 passed in 0.08s\n",
+      "stderr": "",
+      "rule": "pytest -q",
+      "expected": "100% pass",
+      "observed": "30 passed in 0.08s"
+    },
+    {
+      "gate": "G4",
+      "name": "coverage",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "..............................                                           [100%]\n================================ tests coverage ================================\n_______________ coverage: platform darwin, python 3.15.2-final-0 _______________\n\nName                         Stmts   Miss Branch BrPart  Cover   Missing\n------------------------------------------------------------------------\nsrc/smart_todo/__init__.py       1      0      0      0   100%\nsrc/smart_todo/__main__.py       4      4      2      0     0%   1-6\nsrc/smart_todo/cli.py           95      5     26      3    93%   25-26, 144-145, 153\nsrc/smart_todo/commands.py      73      4     26      7    89%   37, 39, 69->68, 87->86, 107, 138, 156->155\nsrc/smart_todo/errors.py        10      0      0      0   100%\nsrc/smart_todo/models.py        82      7     14      3    90%   42, 51, 84-85, 93, 100, 118\nsrc/smart_todo/store.py         45      6      6      2    84%   37, 41, 61-64\n------------------------------------------------------------------------\nTOTAL                          310     26     74     15    89%\nRequired test coverage of 85% reached. Total coverage: 88.80%\n30 passed in 0.21s\n",
+      "stderr": "",
+      "rule": "coverage \u2265 85%",
+      "expected": "line coverage \u2265 85%",
+      "observed": "30 passed in 0.21s"
+    }
+  ]
+}

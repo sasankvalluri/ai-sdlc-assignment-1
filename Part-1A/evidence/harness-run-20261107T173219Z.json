@@ -1,0 +1,51 @@
+{
+  "timestamp": "20261107T173219Z",
+  "cwd": "/Users/sasankvalluri/Documents/Assignment-1-AI-SDLC/Part-1A",
+  "passed": false,
+  "gates": [
+    {
+      "gate": "G1",
+      "name": "lint",
+      "passed": false,
+      "returncode": 1,
+      "stdout": "I001 [*] Import block is un-sorted or un-formatted\n --> src/smart_todo/__main__.py:1:1\n  |\n1 | / from .cli import main\n2 | | import sys\n  | |__________^\n3 |\n4 |   if __name__ == \"__main__\":\n  |\nhelp: Organize imports\n  |\n  - from .cli import main\n1 | import sys\n2 |\n3 + from .cli import main\n4 +\n5 | if __name__ == \"__main__\":\n  |\n\nUP035 [*] Import from `collections.abc` instead: `Callable`\n --> src/smart_todo/commands.py:6:1\n  |\n5 | from pathlib import Path\n6 | from typing import Callable\n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n7 |\n8 | from . import store as store_mod\n  |\nhelp: Import from `collections.abc`\n  |\n5 | from pathlib import Path\n  - from typing import Callable\n6 + from collections.abc import Callable\n7 |\n  |\n\nF401 [*] `.models.Priority` imported but unused\n  --> src/smart_todo/commands.py:12:5\n   |\n10 | from .models import (\n11 |     ALLOWED_TRANSITIONS,\n12 |     Priority,\n   |     ^^^^^^^^\n13 |     Status,\n14 |     Task,\n   |\nhelp: Remove unused import: `.models.Priority`\n   |\n11 |     ALLOWED_TRANSITIONS,\n   -     Priority,\n12 |     Status,\n   |\n\nF401 [*] `dataclasses.field` imported but unused\n  --> src/smart_todo/models.py:8:44\n   |\n 6 | import re\n 7 | import uuid\n 8 | from dataclasses import asdict, dataclass, field\n   |                                            ^^^^^\n 9 | from enum import Enum\n10 | from typing import Any\n   |\nhelp: Remove unused import: `dataclasses.field`\n  |\n7 | import uuid\n  - from dataclasses import asdict, dataclass, field\n8 + from dataclasses import asdict, dataclass\n9 | from enum import Enum\n  |\n\nUP042 Class Priority inherits from both `str` and `enum.Enum`\n  --> src/smart_todo/models.py:20:7\n   |\n20 | class Priority(str, Enum):\n   |       ^^^^^^^^\n21 |     LOW = \"low\"\n22 |     MEDIUM = \"medium\"\n   |\nhelp: Inherit from `enum.StrEnum`\n   |\n8  | from dataclasses import asdict, dataclass, field\n   - from enum import Enum\n9  + from enum import Enum, StrEnum\n10 | from typing import Any\n--------------------------------------------------------------------------------\n19 |\n   - class Priority(str, Enum):\n20 + class Priority(StrEnum):\n21 |     LOW = \"low\"\n   |\nnote: This is an unsafe fix and may change runtime behavior\n\nUP042 Class Status inherits from both `str` and `enum.Enum`\n  --> src/smart_todo/models.py:26:7\n   |\n26 | class Status(str, Enum):\n   |       ^^^^^^\n27 |     PENDING = \"pending\"\n28 |     IN_PROGRESS = \"in_progress\"\n   |\nhelp: Inherit from `enum.StrEnum`\n   |\n8  | from dataclasses import asdict, dataclass, field\n   - from enum import Enum\n9  + from enum import Enum, StrEnum\n10 | from typing import Any\n--------------------------------------------------------------------------------\n25 |\n   - class Status(str, Enum):\n26 + class Status(StrEnum):\n27 |     PENDING = \"pending\"\n   |\nnote: This is an unsafe fix and may change runtime behavior\n\nUP017 [*] Use `datetime.UTC` alias\n  --> src/smart_todo/models.py:43:26\n   |\n41 |     \"\"\"ISO 8601 UTC timestamp truncated to seconds (constitution Article I).\"\"\"\n42 |     return (\n43 |         _dt.datetime.now(_dt.timezone.utc)\n   |                          ^^^^^^^^^^^^^^^^\n44 |         .replace(microsecond=0)\n45 |         .isoformat()\n   |\nhelp: Convert to `datetime.UTC` alias\n   |\n42 |     return (\n   -         _dt.datetime.now(_dt.timezone.utc)\n43 +         _dt.datetime.now(_dt.UTC)\n44 |         .replace(microsecond=0)\n   |\n\nUP037 [*] Remove quotes from type annotation\n  --> src/smart_todo/models.py:72:49\n   |\n71 |     @classmethod\n72 |     def from_dict(cls, data: dict[str, Any]) -> \"Task\":\n   |                                                 ^^^^^^\n73 |         try:\n74 |             return cls(\n   |\nhelp: Remove quotes\n   |\n71 |     @classmethod\n   -     def from_dict(cls, data: dict[str, Any]) -> \"Task\":\n72 +     def from_dict(cls, data: dict[str, Any]) -> Task:\n73 |         try:\n   |\n\nUP035 [*] Import from `collections.abc` instead: `Iterable`\n  --> src/smart_todo/store.py:10:1\n   |\n 8 | from dataclasses import dataclass, field\n 9 | from pathlib import Path\n10 | from typing import Iterable\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n11 |\n12 | from .errors import StoreError\n   |\nhelp: Import from `collections.abc`\n   |\n9  | from pathlib import Path\n   - from typing import Iterable\n10 + from collections.abc import Iterable\n11 |\n   |\n\nF401 [*] `typing.Iterable` imported but unused\n  --> src/smart_todo/store.py:10:20\n   |\n 8 | from dataclasses import dataclass, field\n 9 | from pathlib import Path\n10 | from typing import Iterable\n   |                    ^^^^^^^^\n11 |\n12 | from .errors import StoreError\n   |\nhelp: Remove unused import: `typing.Iterable`\n   |\n9  | from pathlib import Path\n   - from typing import Iterable\n10 |\n   |\n\nSIM105 Use `contextlib.suppress(OSError)` instead of `try`-`except`-`pass`\n  --> src/smart_todo/store.py:62:9\n   |\n60 |           os.replace(tmp_path, path)\n61 |       except OSError as exc:\n62 | /         try:\n63 | |             os.unlink(tmp_path)\n64 | |         except OSError:\n65 | |             pass\n   | |________________^\n66 |           raise StoreError(f\"cannot write store at {path}: {exc}\") from exc\n   |\nhelp: Replace `try`-`except`-`pass` with `with contextlib.suppress(OSError): ...`\n   |\n13 | from .models import Task\n14 + import contextlib\n15 |\n--------------------------------------------------------------------------------\n62 |     except OSError as exc:\n   -         try:\n63 +         with contextlib.suppress(OSError):\n64 |             os.unlink(tmp_path)\n   -         except OSError:\n   -             pass\n65 |         raise StoreError(f\"cannot write store at {path}: {exc}\") from exc\n   |\nnote: This is an unsafe fix and may change runtime behavior\n\nFound 11 errors.\n[*] 8 fixable with `--fix` (3 unsafe fixes available with `--fix --unsafe-fixes`).\n",
+      "stderr": "",
+      "rule": "ruff check",
+      "expected": "0 violations",
+      "observed": "[*] 8 fixable with `--fix` (3 unsafe fixes available with `--fix --unsafe-fixes`)."
+    },
+    {
+      "gate": "G2",
+      "name": "security",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "rule": "bandit -r src -ll",
+      "expected": "0 Medium/High findings",
+      "observed": "OK"
+    },
+    {
+      "gate": "G3",
+      "name": "tests",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "..............................                                           [100%]\n30 passed in 0.10s\n",
+      "stderr": "",
+      "rule": "pytest -q",
+      "expected": "100% pass",
+      "observed": "30 passed in 0.10s"
+    },
+    {
+      "gate": "G4",
+      "name": "coverage",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "..............................                                           [100%]\n================================ tests coverage ================================\n_______________ coverage: platform darwin, python 3.15.2-final-0 _______________\n\nName                         Stmts   Miss Branch BrPart  Cover   Missing\n------------------------------------------------------------------------\nsrc/smart_todo/__init__.py       1      0      0      0   100%\nsrc/smart_todo/__main__.py       4      4      2      0     0%   1-5\nsrc/smart_todo/cli.py           95      5     26      3    93%   25-26, 144-145, 153\nsrc/smart_todo/commands.py      73      4     26      7    89%   38, 40, 70->69, 88->87, 108, 139, 157->156\nsrc/smart_todo/errors.py        10      0      0      0   100%\nsrc/smart_todo/models.py        82      7     14      3    90%   42, 51, 84-85, 93, 100, 118\nsrc/smart_todo/store.py         47      8      6      2    81%   37, 41, 61-66\n------------------------------------------------------------------------\nTOTAL                          312     28     74     15    88%\nRequired test coverage of 85% reached. Total coverage: 88.34%\n30 passed in 0.19s\n",
+      "stderr": "",
+      "rule": "coverage \u2265 85%",
+      "expected": "line coverage \u2265 85%",
+      "observed": "30 passed in 0.19s"
+    }
+  ]
+}
