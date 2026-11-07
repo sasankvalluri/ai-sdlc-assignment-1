@@ -79,30 +79,29 @@ assertions.
 
 ### Q3. Evaluating non-determinism in Part 1B
 
-Case N01 from the dataset is a good example — input
-*"Remind me to call mom tomorrow at 5pm"* with `now = 2026-11-07T10:00:00Z`
-and `timezone = Asia/Kolkata`. Exact string matching would be useless
-here: the model is free to write the title as `"call mom"`,
-`"Call Mom"`, `"give mom a call"` or anything else that preserves the
-intent. And the ISO time has one correct value but infinite ways to
-describe it in prose.
+Take case N01 from my dataset: input *"Remind me to call mom tomorrow
+at 5pm"*, `now = 2026-11-07T10:00:00Z`, `timezone = Asia/Kolkata`. I
+can't match the output against a specific string. The model might
+write the title as `"call mom"`, `"Call Mom"` or `"give mom a call"`
+and all three are fine.
 
-I use three different checks for this one case:
+So I check three different things:
 
-- **Schema** — `when.iso` has to match the regex
+- **Schema** — `when.iso` has to match
   `^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$` (enforced by pydantic's
-  `StringConstraints`). Anything else fails L1.
-- **Invariant** — the dataset says the correct answer falls in
-  `[2026-11-08T10:00:00Z, 2026-11-08T13:00:00Z]`. That window is 5pm
-  Asia/Kolkata (which is 11:30 UTC) with some slack. If the model
-  treats "5pm" as UTC or slips a day, L2 flags it immediately — which
-  is actually how I caught the mock backend's timezone bug on the first
-  run.
-- **Semantic rubric** — the dataset lists `title_must_contain: ["call",
-  "mom"]`. Any wording that keeps both words passes, case-insensitive.
+  `StringConstraints`). Anything that isn't a proper UTC ISO stamp
+  fails L1.
+- **Invariant** — the dataset says the right answer falls in the
+  window `[2026-11-08T10:00:00Z, 2026-11-08T13:00:00Z]`. That's 5pm
+  Asia/Kolkata (11:30 UTC) with some slack. If the model treats "5pm"
+  as UTC or slips a day, L2 catches it. That's actually how I found
+  the mock backend's timezone bug on the first run.
+- **Semantic rubric** — the dataset lists
+  `title_must_contain: ["call", "mom"]`. Any wording that keeps both
+  nouns passes, lower-cased.
 
-Each layer catches a different class of failure (shape, arithmetic,
-content). None of them need the model to produce a specific string.
+Shape, arithmetic, content. Three different kinds of failure, none of
+them needing the model to produce an exact string.
 
 ### Q4. Feedback and self-healing
 
@@ -129,36 +128,38 @@ the same examples, still substitutes the runtime time and timezone.
 
 ### Q5. Human accountability
 
-Even with the real-backend PASS (Run 9 in `Part-1B/evidence/harness-log.md`
-— Groq `openai/gpt-oss-20b`, temperature 0.3, aggregate 0.9941), I'd
-flag a few residual risks before putting this in front of real users.
+Part 1B passed on the real backend (Run 9 in
+`Part-1B/evidence/harness-log.md` — Groq `openai/gpt-oss-20b`,
+temperature 0.3, aggregate 0.9941), but there are a couple of things I
+wouldn't want to ignore before shipping it.
 
-The evidence is tied to **one** model at **one** temperature. A
-different model, a higher temperature, or Groq pushing a weight update
-to the same model id could move the L3 mean around. Run 9 captures the
-model id, temperature and prompt hash in its record so a reproduction
-knows what it's reproducing, but I haven't tested for stability across
-model swaps.
+The evidence is tied to one model at one temperature. A different
+model, a higher temperature, or Groq pushing a weight update to the
+same model id could all move the L3 mean around. The run record
+captures model id, temperature and prompt hash, so a reproduction
+knows what it's reproducing — but I haven't actually tested the agent
+against those swaps.
 
-The L3 scorer is rule-based on purpose — reproducible and cheap — but
-it only gives credit for behaviour it's been told to look for. It
-can't tell me when the model has quietly regressed on something I
-didn't put in the rubric.
+The L3 scorer is rule-based on purpose (keeps reruns reproducible and
+costs nothing to run), but it only gives credit for behaviour it's
+been told to look for. If the model quietly regressed on something
+I didn't put in the rubric, L3 wouldn't flag it.
 
-My prompt-injection guard (`SAF4`) is a keyword match for phrases like
-"ignore previous instructions". That caught case X01 in the dataset,
-but a paraphrase would walk past it.
+My prompt-injection check (`SAF4`) is a keyword match for phrases like
+"ignore previous instructions". It caught case X01 in the dataset, but
+any paraphrase would walk straight past it.
 
-So I accepted Part 1B, but the three controls I'd add before anything
-higher-stakes are:
+If I were shipping this I'd want three more things before I was
+comfortable:
 
-1. A response cache keyed on `(prompt_hash, input, now, timezone)` so
-   eval reruns are cheap and reproducible.
-2. A retry wrapper around the model client so a transient 429 doesn't
-   get counted as a spec violation.
-3. A proper safety classifier in place of the keyword check for
-   prompt injection.
+1. A response cache keyed on `(prompt_hash, input, now, timezone)`.
+   Reruns stop costing model calls, and I can diff a new run against
+   an old one for regressions.
+2. A retry wrapper so a transient 429 doesn't get counted as a spec
+   violation.
+3. A proper safety classifier in place of the keyword check. SAF4 is
+   fine as a tripwire, not as a defence.
 
-The ACCEPT decision is mine. The harness earned it — four honest
-repair cycles, each one surfaced by the harness and fixed without
-weakening a test, an invariant or a threshold.
+The ACCEPT is mine to make and I'm making it. The harness earned it
+across four real repair cycles, and none of the fixes softened a test,
+a rule or a threshold.

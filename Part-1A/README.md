@@ -1,23 +1,24 @@
-# Part-1A — Smart Todo CLI (Deterministic)
+# Part-1A — Smart Todo CLI
 
-A single-user CLI task manager with deterministic behaviour, developed
-via the GitHub Spec Kit SDD flow and gated by a four-check harness.
+A small single-user command-line task manager. Stores tasks in a JSON
+file. Same input, same command — same output. I built it through the
+GitHub Spec Kit SDD flow and put a four-gate harness around it.
 
 ## Quick start
 
 ```bash
 cd Part-1A
-uv sync                       # install into a hermetic .venv
+uv sync
 uv run smart-todo --help
 
-# Add, list, transition:
+# Add, list, transition
 uv run smart-todo add --title "Buy milk" --priority high --tag home
 uv run smart-todo list --json
 uv run smart-todo done <id>
 ```
 
-The default store path is `./tasks.json` in the invocation directory.
-Override via `--store <path>` or the `SMART_TODO_STORE` env var.
+By default the task file is `./tasks.json` in whatever directory you
+run it from. Override with `--store <path>` or `SMART_TODO_STORE`.
 
 ## Run the harness
 
@@ -25,9 +26,10 @@ Override via `--store <path>` or the `SMART_TODO_STORE` env var.
 ./.harness/run.sh
 ```
 
-The runner executes four gates (ruff, bandit, pytest, pytest-cov),
-emits a JSON record under `evidence/harness-run-<ts>.json`, prints a
-terminal summary and exits `0` iff every gate passes.
+Four gates in order: `ruff` for lint, `bandit` for SAST (medium/high
+only), `pytest` for the 30 spec-derived tests, and `pytest-cov` with
+an 85 % threshold. Writes a JSON record to `evidence/` and exits `0`
+only when every gate's green.
 
 ## Layout
 
@@ -63,8 +65,9 @@ Part-1A/
 
 ## Where to start reading
 
-1. `spec-kit/memory/constitution.md` — non-negotiable rules.
+1. `spec-kit/memory/constitution.md` — the rules I agreed not to break.
 2. `spec-kit/specs/001-smart-todo-cli/spec.md` — functional requirements
-   and the `A-###` acceptance clauses every test maps to.
-3. `evidence/harness-log.md` — what the harness caught, how it was
-   repaired, and the final human ACCEPT.
+   and the `A-###` acceptance clauses. Every test name maps back to
+   one of these.
+3. `evidence/harness-log.md` — what the harness caught, how I fixed it,
+   and the final ACCEPT.

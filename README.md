@@ -10,28 +10,30 @@ harness I wrote for each.
 
 ## What's in each part
 
-**Part 1A — Smart Todo CLI.** A deterministic command-line task
-manager in Python. Stores tasks in a JSON file, supports CRUD, tag
-and status filters, priority ordering, and a strict status state
-machine. The harness has four gates: `ruff` for lint, `bandit` for
-SAST, `pytest` for the 30 spec-derived tests, and a coverage gate at
-85%. See `Part-1A/evidence/harness-log.md` for the history of runs,
-three honest repair cycles, and the final ACCEPT.
+**Part 1A — Smart Todo CLI.** A small deterministic command-line task
+manager in Python. Tasks live in a JSON file. CRUD, tag and status
+filters, priority ordering, and a strict status lifecycle (you can't
+re-complete something that's already done — see `clarify.md` C-01).
+The harness has four gates — lint (`ruff`), SAST (`bandit`), 30
+spec-derived tests (`pytest`), and coverage at 85 %. There were three
+honest repair cycles getting it to green; they're all in
+`Part-1A/evidence/harness-log.md`.
 
-**Part 1B — Natural-Language Reminder Agent.** A parser that turns
-sentences like *"remind me to call mom tomorrow at 5pm"* into a typed
-JSON contract. Real backend is Groq (free tier, OpenAI-compatible);
-offline backend is a rule-based mock parser used for CI. The eval
-harness has three layers — JSON-schema validation, intent / safety
-invariants, and a rule-based semantic rubric — run over a 17-case
-dataset covering normal, boundary, ambiguous, missing, malformed and
-adversarial inputs. Final real-backend run (Groq `openai/gpt-oss-20b`,
-temperature 0.3) passes all 17 cases with aggregate 0.9941 against a
-0.85 threshold. Four repair cycles are documented in
+**Part 1B — Natural-Language Reminder Agent.** Turns a sentence like
+*"remind me to call mom tomorrow at 5pm"* into a typed JSON object. The
+real backend runs on Groq's free tier (OpenAI-compatible API); there's
+a rule-based mock parser for offline work. The eval harness is three
+layers — JSON-schema check, intent and safety invariants, rule-based
+semantic rubric — across a 17-case dataset covering normal, boundary,
+ambiguous, missing, malformed and adversarial inputs. The final run on
+Groq `openai/gpt-oss-20b` at temperature 0.3 passes all 17 cases,
+aggregate 0.9941. Four repair cycles got there, all in
 `Part-1B/evidence/harness-log.md`.
 
-**Part 2 — Reflection.** Five short answers grounded in the artifacts
-in this repo. See `Reflection-Report.md`.
+**Part 2 — Reflection.** Five short answers in `Reflection-Report.md`,
+each tied to actual evidence in the repo (run ids, file paths, a
+prompt-hash change). This is the file that gets exported to `.docx`
+and uploaded to LMS.
 
 ## Running the harnesses
 
