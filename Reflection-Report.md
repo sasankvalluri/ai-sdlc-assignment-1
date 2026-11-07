@@ -129,35 +129,36 @@ the same examples, still substitutes the runtime time and timezone.
 
 ### Q5. Human accountability
 
-The honest limitation is that the aggregate PASS I have on record for
-Part 1B is a mock-backend run. The mock parser is deterministic by
-design — it verifies the harness pipeline works end-to-end, but it
-doesn't exercise the actual non-deterministic behaviour of an LLM. In
-`evidence/harness-log.md` I called it a **CONDITIONAL ACCEPT** for that
-reason.
+Even with the real-backend PASS (Run 9 in `Part-1B/evidence/harness-log.md`
+— Groq `openai/gpt-oss-20b`, temperature 0.3, aggregate 0.9941), I'd
+flag a few residual risks before putting this in front of real users.
 
-The real-backend runs I attempted during development ran into
-infrastructure problems — first a prompt-format bug (fixed in Run 2),
-then the GitHub Models endpoint returning bare `OK\r\n` on every path
-regardless of token, then Groq rejecting my default model name because
-my free-tier account didn't have access to it. Each of those is
-documented in the harness log, and the code now supports
-`--backend groq` with a `GROQ_MODEL` override so the real-backend run
-can happen as soon as I have a working model id.
+The evidence is tied to **one** model at **one** temperature. A
+different model, a higher temperature, or Groq pushing a weight update
+to the same model id could move the L3 mean around. Run 9 captures the
+model id, temperature and prompt hash in its record so a reproduction
+knows what it's reproducing, but I haven't tested for stability across
+model swaps.
 
-Before using this in anything like production I'd want three things:
+The L3 scorer is rule-based on purpose — reproducible and cheap — but
+it only gives credit for behaviour it's been told to look for. It
+can't tell me when the model has quietly regressed on something I
+didn't put in the rubric.
+
+My prompt-injection guard (`SAF4`) is a keyword match for phrases like
+"ignore previous instructions". That caught case X01 in the dataset,
+but a paraphrase would walk past it.
+
+So I accepted Part 1B, but the three controls I'd add before anything
+higher-stakes are:
 
 1. A response cache keyed on `(prompt_hash, input, now, timezone)` so
-   I can rerun evals without burning free-tier quota and so results are
-   reproducible.
+   eval reruns are cheap and reproducible.
 2. A retry wrapper around the model client so a transient 429 doesn't
    get counted as a spec violation.
-3. A proper safety classifier in place of the keyword-based prompt
-   injection check I'm using right now — `SAF4` catches the obvious
-   "ignore previous instructions" phrasing but it wouldn't catch a
-   paraphrase.
+3. A proper safety classifier in place of the keyword check for
+   prompt injection.
 
-The ACCEPT decision is mine, and I'm comfortable with the CONDITIONAL
-label — the harness itself is sound, the pipeline is sound, and the
-only thing between now and an unconditional ACCEPT is one working
-backend run with a model id my account can actually use.
+The ACCEPT decision is mine. The harness earned it — four honest
+repair cycles, each one surfaced by the harness and fixed without
+weakening a test, an invariant or a threshold.

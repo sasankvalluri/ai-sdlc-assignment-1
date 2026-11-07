@@ -20,12 +20,14 @@ three honest repair cycles, and the final ACCEPT.
 
 **Part 1B — Natural-Language Reminder Agent.** A parser that turns
 sentences like *"remind me to call mom tomorrow at 5pm"* into a typed
-JSON contract. Real backend is GitHub Models or Groq (OpenAI-compatible
-APIs); offline backend is a rule-based mock parser used for CI. The
-eval harness has three layers — JSON-schema validation, intent /
-safety invariants, and a rule-based semantic rubric — run over a
-17-case dataset covering normal, boundary, ambiguous, missing,
-malformed and adversarial inputs. Details and repair history in
+JSON contract. Real backend is Groq (free tier, OpenAI-compatible);
+offline backend is a rule-based mock parser used for CI. The eval
+harness has three layers — JSON-schema validation, intent / safety
+invariants, and a rule-based semantic rubric — run over a 17-case
+dataset covering normal, boundary, ambiguous, missing, malformed and
+adversarial inputs. Final real-backend run (Groq `openai/gpt-oss-20b`,
+temperature 0.3) passes all 17 cases with aggregate 0.9941 against a
+0.85 threshold. Four repair cycles are documented in
 `Part-1B/evidence/harness-log.md`.
 
 **Part 2 — Reflection.** Five short answers grounded in the artifacts
