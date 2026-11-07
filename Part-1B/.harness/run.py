@@ -50,8 +50,9 @@ def _ts() -> str:
 
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     p = argparse.ArgumentParser(prog="reminder-harness")
-    p.add_argument("--backend", choices=["real", "mock"], default=None,
-                   help="Backend to use; default: real if GITHUB_TOKEN present, else mock.")
+    p.add_argument("--backend", choices=["real", "groq", "mock"], default=None,
+                   help="Backend to use; default: groq if GROQ_API_KEY set, "
+                        "else real if GITHUB_TOKEN set, else mock.")
     p.add_argument("--max-cases", type=int, default=None,
                    help="Cap the number of cases (debug).")
     return p.parse_args(argv)
@@ -60,6 +61,8 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 def _select_backend(explicit: str | None) -> str:
     if explicit:
         return explicit
+    if os.environ.get("GROQ_API_KEY"):
+        return "groq"
     if os.environ.get("GITHUB_MODELS_TOKEN") or os.environ.get("GITHUB_TOKEN"):
         return "real"
     return "mock"

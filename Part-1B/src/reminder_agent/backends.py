@@ -22,7 +22,10 @@ from zoneinfo import ZoneInfo
 from .prompt import load_system_prompt
 
 GITHUB_MODELS_BASE_URL = "https://models.github.ai/inference"
-DEFAULT_MODEL = "openai/gpt-4o-mini"
+GITHUB_MODELS_DEFAULT_MODEL = "openai/gpt-4o-mini"
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+GROQ_DEFAULT_MODEL = "openai/gpt-oss-20b"
+DEFAULT_MODEL = GITHUB_MODELS_DEFAULT_MODEL  # backward-compat alias
 
 
 @dataclass
@@ -43,24 +46,22 @@ class Backend(ABC):
 # ---------------------------------------------------------------------------
 
 
-class RealBackend(Backend):
+class _OpenAICompatibleBackend(Backend):
+    """Shared implementation for any OpenAI-compatible endpoint."""
+
+    backend_label: str = "real"
+
     def __init__(
         self,
         *,
-        model: str = DEFAULT_MODEL,
+        base_url: str,
+        api_key: str,
+        model: str,
         temperature: float = 0.3,
-        base_url: str = GITHUB_MODELS_BASE_URL,
     ) -> None:
-        token = os.environ.get("GITHUB_MODELS_TOKEN") or os.environ.get("GITHUB_TOKEN")
-        if not token:
-            raise RuntimeError(
-                "RealBackend requires GITHUB_MODELS_TOKEN or GITHUB_TOKEN "
-                "(PAT with scope 'models:read'). See README."
-            )
-        # Lazy import so a missing openai install does not break mock runs.
-        from openai import OpenAI
+        from openai import OpenAI  # lazy, so mock runs don't need openai
 
-        self._client = OpenAI(base_url=base_url, api_key=token)
+        self._client = OpenAI(base_url=base_url, api_key=api_key)
         self._model = model
         self._temperature = temperature
 
@@ -80,7 +81,57 @@ class RealBackend(Backend):
             raw_output=content,
             model_id=self._model,
             temperature=self._temperature,
-            backend="real",
+            backend=self.backend_label,
+        )
+
+
+class RealBackend(_OpenAICompatibleBackend):
+    """GitHub Models backend. Requires a PAT with Models:Read permission
+    in GITHUB_MODELS_TOKEN or GITHUB_TOKEN."""
+
+    backend_label = "real"
+
+    def __init__(
+        self,
+        *,
+        model: str = GITHUB_MODELS_DEFAULT_MODEL,
+        temperature: float = 0.3,
+        base_url: str = GITHUB_MODELS_BASE_URL,
+    ) -> None:
+        token = os.environ.get("GITHUB_MODELS_TOKEN") or os.environ.get("GITHUB_TOKEN")
+        if not token:
+            raise RuntimeError(
+                "RealBackend requires GITHUB_MODELS_TOKEN or GITHUB_TOKEN "
+                "(PAT with Models:Read permission). See README."
+            )
+        super().__init__(base_url=base_url, api_key=token, model=model, temperature=temperature)
+
+
+class GroqBackend(_OpenAICompatibleBackend):
+    """Groq free-tier backend. Requires an API key in GROQ_API_KEY.
+
+    Sign up at https://console.groq.com/keys (no card needed). The free
+    tier is more than enough for a 17-case eval dataset. The model can
+    be overridden via GROQ_MODEL if the default is retired."""
+
+    backend_label = "groq"
+
+    def __init__(
+        self,
+        *,
+        model: str | None = None,
+        temperature: float = 0.3,
+        base_url: str = GROQ_BASE_URL,
+    ) -> None:
+        token = os.environ.get("GROQ_API_KEY")
+        if not token:
+            raise RuntimeError(
+                "GroqBackend requires GROQ_API_KEY. Sign up free at "
+                "https://console.groq.com/keys"
+            )
+        resolved_model = model or os.environ.get("GROQ_MODEL") or GROQ_DEFAULT_MODEL
+        super().__init__(
+            base_url=base_url, api_key=token, model=resolved_model, temperature=temperature
         )
 
 
@@ -294,6 +345,8 @@ class MockBackend(Backend):
 def build(backend_name: str) -> Backend:
     if backend_name == "real":
         return RealBackend()
+    if backend_name == "groq":
+        return GroqBackend()
     if backend_name == "mock":
         return MockBackend()
     raise ValueError(f"unknown backend: {backend_name!r}")

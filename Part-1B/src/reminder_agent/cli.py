@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
     parse.add_argument("text")
     parse.add_argument("--now", required=True, help="Reference time, ISO 8601 UTC.")
     parse.add_argument("--tz", default="UTC", help="IANA timezone, default UTC.")
-    parse.add_argument("--backend", choices=["real", "mock"], default="real")
+    parse.add_argument("--backend", choices=["real", "groq", "mock"], default="real")
     return p
 
 

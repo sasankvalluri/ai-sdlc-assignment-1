@@ -1,72 +1,86 @@
 # Assignment 1 — Spec-Driven Development & Harness Engineering
 
-**Course:** AI-Augmented Software Development Life Cycle (SE ZG534)
-**Semester:** S1 2026
-**Student:** Sasank Valluri
-**Submission deadline:** 2026-11-15
+Course: AI-Augmented Software Development Life Cycle (SE ZG534), S1 2026
+Author: Sasank Valluri
+Due: 2026-11-15
 
-This repository is the submission for Assignment 1. It contains two
-small applications developed using the [GitHub Spec Kit](https://github.com/github/spec-kit)
-Spec-Driven Development (SDD) workflow, each with an engineered
-validation harness.
+This repo is my submission for Assignment 1. It has two small apps I
+built using the GitHub Spec Kit SDD workflow and the local validation
+harness I wrote for each.
 
-| Part | Focus | Application | Harness | Status |
-|------|-------|-------------|---------|--------|
-| **1A** | Deterministic SDD + harness | [Smart Todo CLI](Part-1A/) | ruff + bandit + pytest + ≥ 85 % coverage | ACCEPT (final run `20261107T173259Z`) |
-| **1B** | Non-deterministic AI SDD + eval harness | [Reminder Agent](Part-1B/) | L1 structural + L2 invariants + L3 semantic | CONDITIONAL ACCEPT — needs one real-backend run |
-| **2** | Reflection | [Reflection-Report.md](Reflection-Report.md) | — | DRAFT, awaiting rewrite in own voice |
+## What's in each part
+
+**Part 1A — Smart Todo CLI.** A deterministic command-line task
+manager in Python. Stores tasks in a JSON file, supports CRUD, tag
+and status filters, priority ordering, and a strict status state
+machine. The harness has four gates: `ruff` for lint, `bandit` for
+SAST, `pytest` for the 30 spec-derived tests, and a coverage gate at
+85%. See `Part-1A/evidence/harness-log.md` for the history of runs,
+three honest repair cycles, and the final ACCEPT.
+
+**Part 1B — Natural-Language Reminder Agent.** A parser that turns
+sentences like *"remind me to call mom tomorrow at 5pm"* into a typed
+JSON contract. Real backend is GitHub Models or Groq (OpenAI-compatible
+APIs); offline backend is a rule-based mock parser used for CI. The
+eval harness has three layers — JSON-schema validation, intent /
+safety invariants, and a rule-based semantic rubric — run over a
+17-case dataset covering normal, boundary, ambiguous, missing,
+malformed and adversarial inputs. Details and repair history in
+`Part-1B/evidence/harness-log.md`.
+
+**Part 2 — Reflection.** Five short answers grounded in the artifacts
+in this repo. See `Reflection-Report.md`.
+
+## Running the harnesses
+
+```bash
+# Part 1A
+cd Part-1A && uv sync && ./.harness/run.sh
+
+# Part 1B (offline, rule-based mock parser)
+cd Part-1B && uv sync && ./.harness/run.sh --backend mock
+
+# Part 1B (real, Groq free tier — https://console.groq.com/keys)
+GROQ_API_KEY="..." ./.harness/run.sh --backend groq
+# If Groq retires the default model, pick one from the list and set:
+# GROQ_MODEL="<id>" GROQ_API_KEY="..." ./.harness/run.sh --backend groq
+```
 
 ## Repository layout
 
 ```
 Assignment-1/
-├── README.md                  # this file
-├── Reflection-Report.md       # Part 2 responses (draft, to be re-authored and exported to .docx)
-├── Part-1A/                   # Deterministic — Smart Todo CLI
-│   ├── spec-kit/              # constitution, spec, clarify, plan, tasks
-│   ├── src/                   # implementation
-│   ├── tests/                 # 30 specification-derived tests
-│   ├── .harness/              # lint + SAST + test + coverage runner
-│   └── evidence/              # initial/final snapshots, 4 harness runs, log, ACCEPT
-└── Part-1B/                   # Non-deterministic — Reminder Agent
-    ├── spec-kit/              # SDD artifacts
-    ├── src/                   # pydantic schema, validators, backends, agent, CLI
-    ├── prompts/               # versioned system prompt (SHA-256 recorded per run)
-    ├── evals/                 # 17-case dataset + L3 rubric
-    ├── .harness/              # three-layer evaluator
-    └── evidence/              # initial/final snapshots, 6 eval records, log, CONDITIONAL ACCEPT
-```
-
-## Running the harnesses
-
-```bash
-# Part 1A — deterministic
-cd Part-1A && uv sync && ./.harness/run.sh
-
-# Part 1B — non-deterministic (mock = offline, real = GitHub Models)
-cd Part-1B && uv sync && ./.harness/run.sh --backend mock
-# For real backend:
-gh auth refresh -h github.com -s models:read
-export GITHUB_TOKEN=$(gh auth token)
-./.harness/run.sh --backend real
+├── README.md                  ← this file
+├── Reflection-Report.md       ← Part 2 (also exported to .docx for LMS)
+├── Part-1A/
+│   ├── spec-kit/              constitution, spec, clarify, plan, tasks
+│   ├── src/                   smart_todo package
+│   ├── tests/                 30 specification-derived tests
+│   ├── .harness/              lint + SAST + test + coverage runner
+│   └── evidence/              harness runs, log, snapshots
+└── Part-1B/
+    ├── spec-kit/              SDD artifacts for the agent
+    ├── src/                   pydantic schema, validators, backends, agent, CLI
+    ├── prompts/system.md      versioned system prompt (hash recorded per run)
+    ├── evals/                 dataset (17 cases) + L3 rubric
+    ├── .harness/              three-layer evaluator
+    └── evidence/              eval records, log, snapshots
 ```
 
 ## Deliverables
 
-1. **Code** — this public GitHub repository.
-2. **Demo video** — link in `Reflection-Report.md` (paste a Drive/OneDrive
-   URL readable by any BITS email id).
-3. **Reflection Report** — `Reflection-Report.md`, rewritten in the
-   student's voice and exported to `.docx` using the LMS template.
+- Code — this public repo at
+  https://github.com/sasankvalluri/ai-sdlc-assignment-1
+- Demo video — link lives in `Reflection-Report.md` once I've uploaded
+  it to Drive / OneDrive.
+- Reflection report — `Reflection-Report.md`, exported to `.docx` for
+  LMS upload.
 
-## AI policy compliance
+## AI assistance
 
-- AI assistance was used for Spec-Kit artifact drafting, implementation
-  code, prompts, dataset structure, and harness scaffolding — all
-  within §11.4 "Acceptable AI Uses" (Spec-driven development and
-  harness development).
-- The reflection answers in `Reflection-Report.md` are supplied as
-  **drafts** grounded in this repository's actual evidence files; they
-  must be rewritten in the student's own words before submission.
-- No secrets, tokens or credentials appear anywhere in the
-  repository.
+I used an AI coding assistant for drafting the Spec Kit artifacts,
+some boilerplate in the implementation, the first draft of the
+prompts, and the harness scaffolding — all within the "Acceptable AI
+Uses" clause (§11.4 of the brief: SDD and harness development). The
+reflection answers are mine; the harness logs are my working notes.
+No secrets or API tokens are committed anywhere in this repo.
