@@ -5,10 +5,10 @@
 | Field | Value |
 |---|---|
 | Name | Sasank Valluri |
-| Student ID | *(fill in)* |
+| Student ID | 2026ns93003 |
 | Email | aga4code@gmail.com |
 | GitHub repository | https://github.com/sasankvalluri/ai-sdlc-assignment-1 |
-| Demonstration video | *(paste Drive/OneDrive link here)* |
+| Demonstration video | https://drive.google.com/file/d/1h0cfWJslcR0oJHJiM8l8OEkwym3vT76v/view?usp=sharing |
 
 ---
 
