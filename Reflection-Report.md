@@ -149,17 +149,6 @@ My prompt-injection check (`SAF4`) is a keyword match for phrases like
 "ignore previous instructions". It caught case X01 in the dataset, but
 any paraphrase would walk straight past it.
 
-If I were shipping this I'd want three more things before I was
-comfortable:
-
-1. A response cache keyed on `(prompt_hash, input, now, timezone)`.
-   Reruns stop costing model calls, and I can diff a new run against
-   an old one for regressions.
-2. A retry wrapper so a transient 429 doesn't get counted as a spec
-   violation.
-3. A proper safety classifier in place of the keyword check. SAF4 is
-   fine as a tripwire, not as a defence.
-
-The ACCEPT is mine to make and I'm making it. The harness earned it
+The harness earned it
 across four real repair cycles, and none of the fixes softened a test,
 a rule or a threshold.
