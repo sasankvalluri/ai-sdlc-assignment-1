@@ -6,7 +6,7 @@
 |---|---|
 | Name | Sasank Valluri |
 | Student ID | 2026ns93003 |
-| Email | aga4code@gmail.com |
+| Email | sasank.valluri@gmail.com |
 | GitHub repository | https://github.com/sasankvalluri/ai-sdlc-assignment-1 |
 | Demonstration video | https://drive.google.com/file/d/1h0cfWJslcR0oJHJiM8l8OEkwym3vT76v/view?usp=sharing |
 
