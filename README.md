@@ -70,7 +70,7 @@ Assignment-1/
 
 - Code — this public repo at
   https://github.com/sasankvalluri/ai-sdlc-assignment-1
-- Demo video — link lives in `Reflection-Report.md` 
+- Demo video — https://drive.google.com/file/d/1h0cfWJslcR0oJHJiM8l8OEkwym3vT76v/view
 - Reflection report — `Reflection-Report.md`,
 
 ## AI assistance
